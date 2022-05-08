@@ -2,6 +2,8 @@ import { ref } from '@vue/composition-api'
 import store from '@/store'
 import router from '@/router'
 import Swal from 'sweetalert2'
+
+
 const useAuth = () => {
   const formLogin = ref({
     userName: '',
@@ -89,22 +91,151 @@ const useAuth = () => {
     }
   }
   const recoverPassword = () => {
-    // pedir nombre de usuario para recuperar contraseña
+    // preguntar nombre de usuario para recuperar contraseña
     Swal.fire({
-      title: '¿Quieres recuperar tu contraseña?',
-      text: 'Ingresa tu nombre de usuario',
+      title: '¡Recuperar contraseña!',
+      text: 'Ingrese su nombre de usuario',
       input: 'text',
       inputPlaceholder: 'Nombre de usuario',
       showCancelButton: true,
       confirmButtonText: 'Enviar',
       cancelButtonText: 'Cancelar',
+      // validar que no sea nulo
+      inputValidator: value => {
+        if (!value) {
+          return 'El nombre de usuario es obligatorio'
+        }
+      },
       allowOutsideClick: false
+    }).then(async resultado => {
+      if (resultado.value) {
+        const { status, result } = await store.dispatch(
+          'authModule/checkUserName',
+          {
+            userName: resultado.value
+          }
+        )
+        if (status === 'success') {
+          // llamar a funcion para comprobar el codigo
+          validateCode(resultado.value)
+        } else if (result.error_msg === 'El usuario no existe') {
+          Swal.fire({
+            title: '¡Recuperar contraseña!',
+            text: 'El nombre de usuario no existe',
+            icon: 'error',
+            showDenyButton: false,
+            showCancelButton: true,
+            confirmButtonText: 'Volver a intentar'
+          }).then(result => {
+            if (result.isConfirmed) {
+              recoverPassword()
+            }
+          })
+        } else {
+          validateCode(resultado.value)
+        }
+      }
+    })
+  }
+  const validateCode = async userName => {
+    Swal.fire({
+      title: '¡Recuperar contraseña!',
+      text: 'Ingrese su código de recuperación',
+      // use opt input
+      input: 'text',
+      inputPlaceholder: 'Código de recuperación',
+      showCancelButton: true,
+      confirmButtonText: 'Enviar',
+      cancelButtonText: 'Cancelar',
+      // validar que no sea nulo
+      inputValidator: value => {
+        if (!value) {
+          return 'El código de recuperación es obligatorio'
+        }
+      }
+      // validar que solo sean digitos y que tenga 6 caracteres
+    }).then(async resultado => {
+      if (resultado.value) {
+        const { status } = await store.dispatch('authModule/checkCode', {
+          userName: userName,
+          code: resultado.value
+        })
+        if (status === 'success') {
+          // swall para la nueva contraseña
+          Swal.fire({
+            title: '¡Recuperar contraseña!',
+            text: 'Ingrese su nueva contraseña',
+            input: 'password',
+            inputPlaceholder: 'Nueva contraseña',
+            showCancelButton: true,
+            confirmButtonText: 'Enviar',
+            cancelButtonText: 'Cancelar',
+            // validar que no tenga minimo 6 caracteres
+            inputValidator: value => {
+              // validar que tenga por lo menos 6 caracteres
+              if (!value || value.length < 6) {
+                return 'La contraseña debe tener al menos 6 caracteres'
+              }
+            }
+          }).then(async resultado => {
+            if (resultado.value) {
+              const { status } = await store.dispatch('authModule/updatePassword', {
+                userName: userName,
+                newPassword: resultado.value
+              })
+              if (status === 'success') {
+                Swal.fire({
+                  title: '¡Recuperar contraseña!',
+                  text: 'Contraseña actualizada',
+                  icon: 'success'
+                })
+              }else{
+                Swal.fire({
+                  title: '¡Recuperar contraseña!',
+                  text: 'Error al actualizar la contraseña',
+                  icon: 'error'
+                })
+              }
+            }
+          })
+
+        }else{
+          Swal.fire({
+            title: '¡Recuperar contraseña!',
+            text: 'El código de recuperación es incorrecto',
+            icon: 'error',
+            showDenyButton: false,
+            showCancelButton: true,
+            confirmButtonText: 'Volver a intentar'
+          }).then(result => {
+            if (result.isConfirmed) {
+              validateCode(userName)
+            }
+          })
+        }
+      }
+    })
+  }
+
+  const recoverUserNames = () => {
+    //pedir el Correo
+    Swal.fire({
+      title: '¿Quieres recuperar tu nombre de usuario?',
+      text: 'Ingresa tu correo',
+      input: 'email',
+      inputPlaceholder: 'Correo electrónico',
+      showCancelButton: true,
+      confirmButtonText: 'Enviar',
+      cancelButtonText: 'Cancelar',
+      allowOutsideClick: false,
+      validationMessage: 'El correo debe ser valido'
     }).then(async result => {
       if (result.value) {
-        const userName = result.value
+        const email = result.value
+        console.log(email)
         const response = await store.dispatch(
-          'authModule/recoverPassword',
-          userName
+          'authModule/recoverUserNames',
+          email
         )
         if (response.status === 'success') {
           Swal.fire({
@@ -115,8 +246,15 @@ const useAuth = () => {
         } else {
           Swal.fire({
             title: '¡Error!',
-            text: 'El nombre de usuario no existe',
-            icon: 'error'
+            text: 'El correo no existe',
+            icon: 'error',
+            showDenyButton: false,
+            showCancelButton: true,
+            confirmButtonText: 'Volver a intentar'
+          }).then(result => {
+            if (result.isConfirmed) {
+              recoverUserNames()
+            }
           })
         }
       }
@@ -127,7 +265,7 @@ const useAuth = () => {
   const validRegister = ref(true)
   const isLoading = ref(false)
   return {
-    step: 2,
+    step: 1,
     isLoading,
     formLogin,
     formRegister,
@@ -139,7 +277,8 @@ const useAuth = () => {
     validateRegister,
     validateLogin,
 
-    recoverPassword
+    recoverPassword,
+    recoverUserNames
   }
 }
 export default useAuth

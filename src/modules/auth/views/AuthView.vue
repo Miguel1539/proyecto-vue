@@ -39,7 +39,7 @@
                         <a class="caption blue--text" @click="recoverPassword">Forgot password</a>
                       </v-col>
                       <v-col cols="12" sm="5">
-                        <span class="caption blue--text">Forgot Username</span>
+                        <a class="caption blue--text" @click="recoverUserNames">Forgot Username</a>
                       </v-col>
                     </v-row>
                     <v-row>
@@ -224,7 +224,8 @@ export default {
       validateLogin,
       validateRegister,
       isLoading,
-      recoverPassword
+      recoverPassword,
+      recoverUserNames
       
     } = useAuth()
     return {
@@ -238,7 +239,8 @@ export default {
       isLoading,
       validateLogin,
       validateRegister,
-      recoverPassword
+      recoverPassword,
+      recoverUserNames
 
       // validateLogin: () => {
       //   if (context.refs.forLogin.validate()) {

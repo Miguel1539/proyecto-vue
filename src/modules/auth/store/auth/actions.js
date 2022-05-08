@@ -70,3 +70,112 @@ export const loginUser = async ({ commit }, user) => {
     console.log(error)
   }
 }
+
+export const recoverUserNames = async (_, email) => {
+  try {
+    //Swall loading
+    Swal.fire({
+      title: '¡Cargando!',
+      text: 'Enviando correo...',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      allowEnterKey: false
+    })
+    const response = await authApi.get('/recoverUserNames?', {
+      params: {
+        email: email
+      }
+    })
+    const { data } = response
+    if (data.status === 'error') {
+      return { status: 'error' }
+    } else {
+      return { status: 'success' }
+    }
+  } catch (error) {
+    console.log('error')
+    console.log(error)
+  }
+}
+
+export const checkUserName = async (_, user) => {
+  try {
+    Swal.fire({
+      title: '¡Cargando!',
+      text: 'Enviando correo...',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      allowEnterKey: false
+    })
+    const { userName } = user
+    const response = await authApi.post('/recoverPass', {
+      userName
+    })
+    const { data } = response
+    if (data.status === 'error') {
+      return {
+        status: 'error',
+        result: {
+          error_msg: data.result.error_msg
+        }
+      }
+    } else {
+      return { status: 'success' }
+    }
+  } catch (error) {
+    console.log('error')
+    console.log(error)
+  }
+}
+
+export const checkCode = async (_, { userName, code }) => {
+  try {
+    Swal.fire({
+      title: '¡Cargando!',
+      text: 'Comprobando código...',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      allowEnterKey: false
+    })
+    const response = await authApi.get('/recoverPass', {
+      params: {
+        userName,
+        code
+      }
+    })
+    const { data } = response
+    if (data.status === 'error') {
+      return { status: 'error' }
+    } else {
+      return { status: 'success' }
+    }
+  } catch (error) {
+    console.log('error')
+    console.log(error)
+  }
+}
+
+export const updatePassword = async (_, { userName, newPassword }) => {
+  try {
+    Swal.fire({
+      title: '¡Cargando!',
+      text: 'Actualizando contraseña...',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      allowEnterKey: false
+    })
+    const response = await authApi.put('/recoverPass', {
+      userName,
+      newPassword
+    })
+    const { data } = response
+    if (data.status === 'error') {
+      return { status: 'error' }
+    } else {
+      return { status: 'success' }
+    }
+  } catch (error) {
+    console.log('error')
+    console.log(error)
+  }
+}
