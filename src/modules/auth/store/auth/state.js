@@ -1,4 +1,4 @@
 export default () => ({
     userName: '',
-    Token: ''
+    token: ''
 })

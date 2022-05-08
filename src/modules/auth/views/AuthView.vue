@@ -10,19 +10,19 @@
                 ref="forLogin"
                 v-model="validLogin"
                 lazy-validation
-                @submit.prevent="validateLogin"
+                @submit.prevent="validateLogin($refs.forLogin.validate())"
               >
                 <v-row align="center" justify="center">
                   <v-col cols="12" sm="8">
                     <v-text-field
-                      label="Correo electrónico"
+                      label="Nombre de usuario"
                       outlined
                       dense
                       color="blue"
                       autocomplete="false"
                       class="mt-16"
-                      v-model="formLogin.email"
-                      :rules="rulesLogin.email"
+                      v-model="formLogin.userName"
+                      :rules="rulesLogin.userName"
                     />
                     <v-text-field
                       label="Contraseña"
@@ -36,7 +36,7 @@
                     />
                     <v-row justify="center" style="text-align: center">
                       <v-col cols="12" sm="5">
-                        <span class="caption blue--text">Forgot password</span>
+                        <a class="caption blue--text" @click="recoverPassword">Forgot password</a>
                       </v-col>
                       <v-col cols="12" sm="5">
                         <span class="caption blue--text">Forgot Username</span>
@@ -111,7 +111,7 @@
                 ref="forRegister"
                 v-model="validRegister"
                 lazy-validation
-                @submit.prevent="validateRegister"
+                @submit.prevent="validateRegister($refs.forRegister.validate())"
               >
                 <v-row>
                   <v-col>
@@ -209,31 +209,55 @@
 
 <script>
 import useAuth from '../composables/useAuth'
-import { ref } from '@vue/composition-api'
-export default {
-  setup(props, context) {
-    const isLoading = ref(false)
-    return {
-      ...useAuth(),
 
+export default {
+  setup() {
+    
+    const {
+      step,
+      formLogin,
+      formRegister,
+      rulesLogin,
+      rulesRegister,
+      validLogin,
+      validRegister,
+      validateLogin,
+      validateRegister,
       isLoading,
-  
-      validateLogin: () => {
-        if (context.refs.forLogin.validate()) {
-          isLoading.value = true
-          setTimeout(() => { // simula una petición a la base de datos
-            isLoading.value = false
-          }, 2000)
-        } 
-      },
-      validateRegister: () => {
-        if (context.refs.forRegister.validate()) {
-          isLoading.value = true
-          setTimeout(() => { // simula una petición a la base de datos
-            isLoading.value = false
-          }, 2000)
-        } 
-      }
+      recoverPassword
+      
+    } = useAuth()
+    return {
+      step,
+      formLogin,
+      formRegister,
+      rulesLogin,
+      rulesRegister,
+      validLogin,
+      validRegister,
+      isLoading,
+      validateLogin,
+      validateRegister,
+      recoverPassword
+
+      // validateLogin: () => {
+      //   if (context.refs.forLogin.validate()) {
+      //     isLoading.value = true
+      //     setTimeout(() => {
+      //       // simula una petición a la base de datos
+      //       isLoading.value = false
+      //     }, 2000)
+      //   }
+      // },
+      // validateRegister: () => {
+      //   if (context.refs.forRegister.validate()) {
+      //     isLoading.value = true
+      //     setTimeout(() => {
+      //       // simula una petición a la base de datos
+      //       isLoading.value = false
+      //     }, 2000)
+      //   }
+      // }
     }
   }
 }
