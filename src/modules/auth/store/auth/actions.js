@@ -179,3 +179,32 @@ export const updatePassword = async (_, { userName, newPassword }) => {
     console.log(error)
   }
 }
+
+export const checkAuthentication = async ({ commit }) => {
+  const token = localStorage.getItem('token')
+  const userName = localStorage.getItem('userName')
+  if (!token || !userName) {
+    commit('logout')
+    return { status: 'error' }
+  }
+  try {
+    const response = await authApi.get('/auth', {
+      params: {
+        userName: userName,
+        token: token
+      }
+    })
+    const { data } = response
+    if (data.status === 'error') {
+      commit('logout')
+      return { status: 'error' }
+    } else {
+      commit('setToken', token)
+      commit('setUserName', userName)
+      return { status: 'success' }
+    }
+  } catch (error) {
+    console.log('error')
+    console.log(error)
+  }
+}

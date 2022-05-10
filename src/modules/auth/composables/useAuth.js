@@ -76,7 +76,7 @@ const useAuth = () => {
     // console.log(...mapActions['authModule'])
     const { status } = await store.dispatch('authModule/createUser', user)
     if (status === 'success') {
-      router.push('/')
+      router.push('/main')
     }
     // store.dispatch('auth/createUser', user)
   }
@@ -87,7 +87,7 @@ const useAuth = () => {
     const { status } = await store.dispatch('authModule/loginUser', user)
     if (status === 'success') {
       // console.log('login success')
-      router.push('/')
+      router.push('/main')
     }
   }
   const recoverPassword = () => {
