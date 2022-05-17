@@ -55,6 +55,11 @@ const routes = [
     //todas las rutas que no existen se van a /auth
     path: '*',
     redirect: '/'
+  },
+  {
+    path: '/pr',
+    name: 'pr',
+    component: () => import(/* webpackChunkName: "pr" */ '../modules/main/modules/profile/components/pruebas.vue')
   }
 ]
 
