@@ -24,14 +24,14 @@
                       username
                     }}</v-list-item-title>
                     <v-list-item-subtitle>
-                      descipcion lorem
+                      {{descipcion}}
                     </v-list-item-subtitle>
                     <v-list-item-subtitle class="mt-3">
                       <strong style="color: black">0</strong> Seguidores
                       <strong style="color: black">0</strong> Seguidos
                     </v-list-item-subtitle>
                   </v-list-item-content>
-                  <DialogProfile color="green" icon="mdi-pencil" option="editProfile"/>
+                  <DialogProfile color="green" icon="mdi-pencil" option="editProfile" :description="descipcion"/>
                 </v-list-item>
               </v-card>
               <div class="publicar">
@@ -70,6 +70,7 @@ export default {
       fab,
 
       username: computed(() => store.getters['authModule/getUserName']),
+      descipcion: computed(() => store.getters['profileModule/getDescripcion']),
 
       getImgMainProfile,
       getImgBanner

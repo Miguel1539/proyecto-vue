@@ -1,21 +1,21 @@
 <template>
   <v-container>
     <v-row>
-      <v-col v-for="(item, index) in items" :key="index">
+      <v-col v-for="(item, index) in getPublicaciones" :key="index">
         <v-card style="margin: 0 auto" max-width="700px">
           <v-img
-            :src="item.src"
+            :src="item.foto"
             class="white--text align-end"
             gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
           >
-            <v-card-title>Descipcion opcional </v-card-title>
+            <v-card-title>{{item.descripcion}} </v-card-title>
           </v-img>
 
           <v-card-actions>
             <template>
               <v-list-item two-line>
                 <v-list-item-avatar>
-                  <img src="https://randomuser.me/api/portraits/women/81.jpg" />
+                  <img :src="getImgMainProfile" />
                 </v-list-item-avatar>
 
                 <v-list-item-content>
@@ -29,15 +29,16 @@
               <v-icon v-if="item.active">mdi-heart-outline</v-icon>
               <v-icon v-else color="error">mdi-heart</v-icon>
             </v-btn>
-            <v-btn icon @click="item.drawer = !item.drawer">
+            <v-btn icon @click="drawer(item.ID_publicacion,index)">
               <v-icon>mdi-comment-text-outline</v-icon>
             </v-btn>
+            
           </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
     <v-navigation-drawer
-      v-for="(item, index) in items"
+      v-for="(item, index) in getPublicaciones"
       :key="index"
       v-model="item.drawer"
       fixed
@@ -45,6 +46,7 @@
       right
       width="400"
     >
+    
       <v-list-item>
         <v-list-item-avatar>
           <v-img :src="imgAvatar"></v-img>
@@ -74,29 +76,43 @@
           <v-text>fda </v-text>
         </v-list-tile-content>
       </v-list> -->
+      
       <v-card class="mx-auto" elevation="0">
         <v-list three-line dense>
-          <template v-for="comment in item.comentarios">
-            <v-list-item :key="comment.id">
+          <template v-for="comment in item.comments">
+            <v-list-item :key="comment.ID_comentario">
               <v-list-item-content>
                 <v-list-item-title
-                  ><strong>{{ comment.user_name }}</strong></v-list-item-title
+                  ><strong>{{ comment.username }}</strong></v-list-item-title
                 >
                 <v-list-item-subtitle
-                  ><span>{{ comment.comment }}</span></v-list-item-subtitle
+                  ><span>{{ comment.comentario }}</span></v-list-item-subtitle
                 >
               </v-list-item-content>
+              
             </v-list-item>
           </template>
         </v-list>
       </v-card>
     </v-navigation-drawer>
+    <v-overlay :value="overlay">
+      <v-progress-circular
+      :size="70"
+      :width="7"
+      color="purple"
+      indeterminate
+    ></v-progress-circular>
+    </v-overlay>
   </v-container>
 </template>
 
 <script>
 // import Drawer from "./Drawer.vue";
-import { ref } from '@vue/composition-api'
+import { ref,computed, onMounted } from '@vue/composition-api'
+import store from '@/store'
+import useProfile from '../../../composables/useProfile'
+
+
 export default {
   name: 'Post',
   components: {
@@ -113,139 +129,39 @@ export default {
     }
   },
   setup() {
-    const comentarioUsuario = ref('')
-    const items = ref(null)
-    const inicializaitmspruebas = () => {
-      return [
-        {
-          active: true,
-          drawer: false,
-          src: 'https://picsum.photos/1920/1080?random=1',
-          comentarios: [
-            {
-              id: 1,
-              user_name: 'Brunch ',
-              comment: `<span class="text--primary">Ali Connors</span> &mAli Connors</span> &mAli Connors</span> &mAli Connors</span> &mAli Connors</span> &mAli Connors</span> &mdash; I'll be in your neighborhood doing errands this weekend. Do you want to hang out?`
-            },
+    onMounted(() => {
+      store.dispatch('profileModule/getPostByUsername',[0,10])
+    })
 
-            {
-              id: 2,
-              user_name: 'Summer ',
-              comment: `<span class="text--primary">to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend.`
-            },
+    const overlay = ref(false)
 
-            {
-              id: 3,
-              user_name: 'Oui oui',
-              comment:
-                '<span class="text--primary">Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?'
-            },
-
-            {
-              id: 4,
-              user_name: 'Birthday ',
-              comment:
-                '<span class="text--primary">Trevor Hansen</span> &mdash; Have any ideas about what we should get Heidi for her birthday?'
-            },
-            {
-              id: 5,
-              user_name: 'Recipe ',
-              comment:
-                '<span class="text--primary">Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos.'
-            },
-            {
-              id: 12,
-              user_name: 'Recipe ',
-              comment:
-                '<span class="text--primary">Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos.'
-            },
-            {
-              id: 13,
-              user_name: 'Recipe ',
-              comment:
-                '<span class="text--primary">Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos.'
-            },
-            {
-              id: 14,
-              user_name: 'Recipe ',
-              comment:
-                '<span class="text--primary">Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos.'
-            },
-            {
-              id: 15,
-              user_name: 'Recipe ',
-              comment:
-                '<span class="text--primary">Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos.'
-            }
-          ]
-        },
-        {
-          active: true,
-          drawer: false,
-          src: 'https://picsum.photos/1920/1080?random=2',
-          comentarios: [
-            {
-              id: 6,
-              user_name: 'Juan1',
-              comment: 'Hola'
-            },
-            {
-              id: 7,
-              user_name: 'Pedro1',
-              comment: 'Hola'
-            }
-          ]
-        },
-        {
-          active: true,
-          drawer: false,
-          src: 'https://picsum.photos/1920/1080?random=3',
-          comentarios: [
-            {
-              id: 8,
-              user_name: 'Juan2',
-              comment: 'Hola'
-            },
-            {
-              id: 9,
-              user_name: 'Pedro2',
-              comment: 'Hola'
-            }
-          ]
-        },
-        {
-          active: true,
-          drawer: false,
-          src: 'https://picsum.photos/1920/1080?random=4',
-          comentarios: [
-            {
-              id: 10,
-              user_name: 'Juan3',
-              comment: 'Hola'
-            },
-            {
-              id: 11,
-              user_name: 'Pedro3',
-              comment: 'Hola'
-            }
-          ]
-        },
-        {
-          active: true,
-          drawer: false,
-          src: 'https://picsum.photos/1920/1080?random=5'
-        }
-      ]
+    const drawer = async (ID_publicacion,index) => {
+      // console.log(ID_publicacion)
+      overlay.value = true
+      await store.dispatch('profileModule/getComments', [ID_publicacion,index])
+      // setTimeout(() => {
+      //   overlay.value = false
+      // }, 2000);
+      overlay.value = false
+      store.commit('profileModule/changeDrawer',index)
     }
-    items.value = inicializaitmspruebas()
+    const { getImgMainProfile } = useProfile()
+    const comentarioUsuario = ref('')
+    
     const comentarioUsuarioRules = [
       v => !!v || 'Comentario requerido',
       v => v.length <= 70 || 'Comentario debe tener menos de 70 caracteres'
     ]
     return {
+      overlay,
+
       comentarioUsuario,
-      items,
-      comentarioUsuarioRules
+      
+      comentarioUsuarioRules,
+
+      getImgMainProfile,
+      getPublicaciones: computed(() => store.getters['profileModule/getPublicaciones']),
+      drawer
     }
   }
 }

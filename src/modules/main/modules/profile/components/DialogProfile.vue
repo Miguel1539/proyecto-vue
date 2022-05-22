@@ -54,7 +54,7 @@
         <v-spacer></v-spacer>
         <v-toolbar-items>
           <v-btn dark text @click="save" v-if="editProfile"> Guardar </v-btn>
-          <v-btn dark text v-else> Subir </v-btn>
+          <v-btn dark text v-else @click="uploadPost"> Subir </v-btn>
         </v-toolbar-items>
       </v-toolbar>
       <v-list three-line subheader v-if="editProfile">
@@ -120,14 +120,16 @@
           <v-col>
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title>Imagen para la publicación</v-list-item-title>
+                <v-list-item-title
+                  >Imagen para la publicación</v-list-item-title
+                >
                 <v-file-input
                   v-model="selectedImgPost"
                   :rules="rules"
                   accept="image/png, image/jpeg"
                   placeholder="selecciona una imagen para la publicación"
                   prepend-icon="mdi-camera"
-                  label="Avatar"
+                  label="Imagen"
                 ></v-file-input>
               </v-list-item-content>
             </v-list-item>
@@ -137,7 +139,9 @@
           <v-col>
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title>Título para la publicación</v-list-item-title>
+                <v-list-item-title
+                  >Título para la publicación</v-list-item-title
+                >
                 <v-textarea
                   filled
                   auto-grow
@@ -145,8 +149,8 @@
                   rows="2"
                   row-height="30"
                   shaped
-                  v-model="description"
-                  :rules="rulesOfDesciption"
+                  v-model="title"
+                  :rules="rulesOftitle"
                   counter="70"
                 ></v-textarea>
               </v-list-item-content>
@@ -197,15 +201,23 @@ export default {
         value.length < 200 ||
         'La descripción debe ser inferior a 200 caracteres!'
     ]
+    const rulesOftitle = [
+      value =>
+        !value ||
+        value.length < 70 ||
+        'El título debe ser inferior a 70 caracteres!'
+    ]
     const selectedImgAvatar = ref(null)
     const selectedImgBanner = ref(null)
     const selectedImgPost = ref(null)
     const snackbar = ref(false)
     const text = ref([])
-    const description = ref(store.getters['profileModule/getDescripcion'])
-    const oldDesciption = store.getters['profileModule/getDescripcion']
+    const title = ref('')
+    const description = ref('')
     const colorSnackbar = ref('error')
+
     const save = async () => {
+      text.value = []
       let error = 0
       let imgAvatar = false
       let imgBanner = false
@@ -258,8 +270,8 @@ export default {
           text.value.push('La imagen de banner no es del tipo correcto')
         }
       }
-      // comprobar si existe modificacion en la descripcion
-      if (description.value !== oldDesciption) {
+      // comprobar si existe descripcion
+      if (description.value) {
         if (description.value.length <= 200) {
           // comprobar que la descripcion no sea mayor a 200 caracteres
           modDescripcion = true
@@ -299,13 +311,92 @@ export default {
             'banner'
           ])
         }
-        // mostrar snackbar
-        snackbar.value = true
-        colorSnackbar.value = 'success'
-        // mostrar texto de exito
-        text.value = []
-        text.value.push('Se han guardado los cambios')
+        // comprobar si se ha modificado algo
+        if (modDescripcion || imgAvatar || imgBanner) {
+          // mostrar snackbar
+          snackbar.value = true
+          // mostrar texto de exito
+          text.value = []
+          text.value.push('Se han guardado los cambios')
+          colorSnackbar.value = 'success'
+        } else {
+          // mostrar snackbar
+          snackbar.value = true
+          // mostrar texto de error
+          text.value = []
+          text.value.push('No se han realizado cambios')
+          colorSnackbar.value = 'error'
+        }
+        // // mostrar snackbar
+        // snackbar.value = true
+        // colorSnackbar.value = 'success'
+        // // mostrar texto de exito
+        // text.value = []
+        // text.value.push('Se han guardado los cambios')
       }
+    }
+
+    const uploadPost = async () => {
+      let error = 0
+      let imgPost = false
+      // comprobar si existe img para Post
+      if (selectedImgPost.value) {
+        // comprobar que sea del tipo correcto y pintar un log de acierto
+        if (
+          selectedImgPost.value.type === 'image/jpeg' ||
+          selectedImgPost.value.type === 'image/png'
+        ) {
+          // comporbar que el tamaño sea menor a 2 MB
+          if (selectedImgPost.value.size < 2000000) {
+            imgPost = true
+          } else {
+            selectedImgPost.value = null
+            error++
+            text.value.push(
+              'El tamaño de la imagen del post debe ser inferior a 2 MB!'
+            )
+          }
+        } else {
+          // borrar el continido del input
+          selectedImgPost.value = null
+          error++
+          text.value.push('La imagen del post no es del tipo correcto')
+        }
+      }
+      // comprobar si hay algun error
+        if (error > 0) {
+          // mostrar snackbar
+          snackbar.value = true
+          // mostrar texto de error
+        } else {
+          // comprobar si existe modificacion en la imagen de post
+          if (imgPost) {
+            // modificar la imagen de post
+            await store.dispatch('profileModule/uploadPost', [
+              selectedImgPost.value,
+              title.value
+            ])
+          }
+          // comprobar si se ha modificado algo
+          if (imgPost) {
+            // mostrar snackbar
+            snackbar.value = true
+            // mostrar texto de exito
+            text.value = []
+            text.value.push('Se ha subido el post')
+            colorSnackbar.value = 'success'
+          } else {
+            // mostrar snackbar
+            snackbar.value = true
+            // mostrar texto de error
+            text.value = []
+            text.value.push('No se ha subido el post')
+            colorSnackbar.value = 'error'
+          }
+        }
+        // reiniciar valores
+        selectedImgPost.value = null
+        title.value = ''
     }
 
     return {
@@ -314,13 +405,16 @@ export default {
       dialog,
       rules,
       rulesOfDesciption,
+      rulesOftitle,
       colorSnackbar,
+      title,
       description,
       selectedImgAvatar,
       selectedImgBanner,
       selectedImgPost,
 
       save,
+      uploadPost,
 
       editProfile: computed(() => {
         if (props.option == 'editProfile') {

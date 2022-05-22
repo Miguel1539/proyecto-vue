@@ -4,4 +4,5 @@ export default () => ({
     descipcion: '',
     foto_perfil: '',
     foto_banner: '',
+    publicaciones: [],
 })

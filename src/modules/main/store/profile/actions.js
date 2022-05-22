@@ -81,3 +81,56 @@ export const updateProfile = async ({ commit }, [valor, opcion]) => {
       break
   }
 }
+
+export const getPostByUsername = async({ commit },[inicio,fin]) =>{
+  try {
+    const response = await authApi.get('/post', {
+      params: {
+        token: store.getters['authModule/getToken'],
+        user: store.getters['authModule/getUserName'],
+        inicio,
+        fin
+      }
+    })
+    // console.log(response.data)
+    commit('setPublicaciones', response.data.result)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const uploadPost = async ({ commit }, [img, descripcion]) => {
+  // preparar la imagen en un formdata
+  const formData = new FormData()
+  formData.append('imagen', img)
+  try {
+    const response = await authApi.post('/post', formData, {
+      params: {
+        token: store.getters['authModule/getToken'],
+        user: store.getters['authModule/getUserName'],
+        descripcion
+      }
+    })
+    // console.log(response)
+    getPostByUsername({ commit }, [0, 10])
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const getComments = async ({ commit }, [id,index, inicio, fin]) => {
+  console.log(id)
+  try {
+    const response = await authApi.get('/comment', {
+      params: {
+        token: store.getters['authModule/getToken'],
+        user: store.getters['authModule/getUserName'],
+        id_post: id,
+      }
+    })
+    // console.log(response.data)
+    commit('setComments', [response.data.result, index])
+  } catch (error) {
+    console.log(error)
+  }
+}

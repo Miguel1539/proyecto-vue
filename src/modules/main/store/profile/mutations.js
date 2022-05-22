@@ -22,3 +22,22 @@ export const clearProfile = ( state ) =>{
     state.foto_perfil = null
     state.foto_banner = null
 }
+export const setPublicaciones = ( state,publicaciones ) =>{
+    state.publicaciones = publicaciones
+}
+
+export const changeDrawer = ( state,index ) =>{
+    // state.prublicaciones[].drawer = !drawer
+    // console.log(index)
+    // console.log(state.publicaciones[index].drawer)
+    state.publicaciones[index].drawer  = !state.publicaciones[index].drawer
+    // console.log(state.publicaciones[index].drawer)
+    
+
+}
+
+export const setComments = ( state,[comments,index] ) =>{
+    // console.log(comments)
+    // console.log(id)
+    state.publicaciones[index].comments = comments
+}
