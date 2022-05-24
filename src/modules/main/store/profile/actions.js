@@ -82,7 +82,7 @@ export const updateProfile = async ({ commit }, [valor, opcion]) => {
   }
 }
 
-export const getPostByUsername = async({ commit },[inicio,fin]) =>{
+export const getPostByUsername = async ({ commit }, [inicio, fin]) => {
   try {
     const response = await authApi.get('/post', {
       params: {
@@ -92,8 +92,14 @@ export const getPostByUsername = async({ commit },[inicio,fin]) =>{
         fin
       }
     })
-    // console.log(response.data)
-    commit('setPublicaciones', response.data.result)
+    // console.log(response.data.status)
+    if (response.data.status === 'OK') {
+      commit('setPublicaciones', response.data.result)
+      // console.log('ok')
+      return false
+    } else {
+      return true
+    }
   } catch (error) {
     console.log(error)
   }
@@ -118,18 +124,58 @@ export const uploadPost = async ({ commit }, [img, descripcion]) => {
   }
 }
 
-export const getComments = async ({ commit }, [id,index, inicio, fin]) => {
-  console.log(id)
+export const getComments = async ({ commit }, [id, index, inicio, fin]) => {
+  // console.log(id)
   try {
     const response = await authApi.get('/comment', {
       params: {
         token: store.getters['authModule/getToken'],
         user: store.getters['authModule/getUserName'],
-        id_post: id,
+        id_post: id
       }
     })
     // console.log(response.data)
     commit('setComments', [response.data.result, index])
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const addComment = async ({ commit }, [id, index, descripcion]) => {
+  // console.log(id, index, descripcion)
+
+  try {
+    const response = await authApi.post('/comment', {
+      token: store.getters['authModule/getToken'],
+      user: store.getters['authModule/getUserName'],
+      comment: descripcion,
+      postID: id
+    })
+
+    // const comment = {
+    //   ID_comentario: null,
+    //   comentario: descripcion,
+    //   publicacion_id: id,
+    //   username: store.getters['authModule/getUserName']
+    // }
+
+    // console.log(response)
+    getComments({ commit }, [id, index, 0, 10])
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const setLike = async ({ commit }, [id_post, index]) => {
+  try {
+    const response = await authApi.post('/like', {
+      user: store.getters['authModule/getUserName'],
+      token: store.getters['authModule/getToken'],
+      postID: id_post
+    })
+    // console.log(response)
+    // getPostByUsername({ commit }, [0, 10])
+    commit('setLike',index)
   } catch (error) {
     console.log(error)
   }
