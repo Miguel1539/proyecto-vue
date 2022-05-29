@@ -1,6 +1,9 @@
 <template>
   <v-container id="scroll-target">
+    <!-- {{getPublicaciones}} -->
     <v-row v-scroll:#scroll-target="onScroll">
+      <!-- {{isSearchedUser}},,,,{{getPublicaciones}} -->
+      <!-- {{isSearchedUser}} -->
       <v-col v-for="(item, index) in getPublicaciones" :key="index">
         <v-card style="margin: 0 auto" max-width="700px">
           <v-img
@@ -15,7 +18,13 @@
             <template>
               <v-list-item two-line>
                 <v-list-item-avatar>
-                  <img :src="getImgMainProfile" />
+                  <v-img
+                    :src="
+                      isSearchedUser
+                        ? getImgMainProfileUserSearched
+                        : getImgMainProfile
+                    "
+                  />
                 </v-list-item-avatar>
 
                 <v-list-item-content>
@@ -25,7 +34,7 @@
             </template>
             <v-spacer></v-spacer>
 
-            <v-btn icon @click="setLike(item.ID_publicacion,index)">
+            <v-btn icon @click="setLike(item.ID_publicacion, index)">
               <v-icon v-if="item.active">mdi-heart-outline</v-icon>
               <v-icon v-else color="error">mdi-heart</v-icon>
             </v-btn>
@@ -65,6 +74,7 @@
             :counter="70"
             label="Comentario"
             required
+            @keypress.enter="addComent"
           ></v-text-field>
         </v-list-item>
       </v-list-item>
@@ -140,6 +150,7 @@
 import { ref, computed, onMounted } from '@vue/composition-api'
 import store from '@/store'
 import useProfile from '../../../composables/useProfile'
+import router from '@/router'
 
 export default {
   name: 'Post',
@@ -154,12 +165,26 @@ export default {
     imgAvatar: {
       type: String,
       required: true
+    },
+    isSearchedUser: {
+      type: Boolean,
+      required: true
     }
   },
-  setup() {
-    onMounted(() => {
-      store.dispatch('profileModule/getPostByUsername', [0, 10])
-    })
+  setup(props) {
+    // const isSearchedUser = ref(false)
+
+    // onMounted(() => {
+    //   const v = store.getters['profileModule/getUserName']
+
+    //   if (v != props.user){
+    //     console.log('cambio de usuario')
+    //   } else {
+    //     console.log('no cambio de usuario')
+    //   }
+    // // store.dispatch('profileModule/getPostByUsername', [0, 10])
+
+    // })
     //test
     // const test = ref(false)
     const offsetTop = ref(0)
@@ -171,14 +196,26 @@ export default {
       // sacar el tamaño maxiomo de el scroll
 
       const maxScroll = e.target.scrollHeight - e.target.clientHeight
-      if (e.target.scrollTop == maxScroll) {
+      // calcular el porcentaje de scroll
+      const scrollPercent = Math.round((e.target.scrollTop / maxScroll) * 100)
+
+      // console.log(scrollPercent)
+      // if (e.target.scrollTop == maxScroll) {
+      if (scrollPercent == 92) {
         if (stopPage.value) {
           return
         } else {
           isLoadingPosts.value = true
+          let config
+          if (props.isSearchedUser) {
+            config = [page.value, 10, props.user]
+          } else {
+            config = [page.value, 10]
+          }
+          // console.log(config)
           const result = await store.dispatch(
             'profileModule/getPostByUsername',
-            [page.value, 10]
+            config
           )
           page.value += 10
           stopPage.value = result
@@ -193,7 +230,7 @@ export default {
 
     let ID_publicacionSelected = null
 
-    const { getImgMainProfile } = useProfile()
+    const { getImgMainProfile, getImgMainProfileUserSearched } = useProfile()
 
     const showDrawer = ref(false)
     const isLoading = ref(false)
@@ -207,20 +244,30 @@ export default {
       indexPublicacionSelected.value = index
       // console.log(ID_publicacion)
       overlay.value = true
-      await store.dispatch('profileModule/getComments', [ID_publicacion, index])
+      let config
+      if (props.isSearchedUser) {
+        config = [ID_publicacion, index, props.isSearchedUser]
+      } else {
+        config = [ID_publicacion, index, props.isSearchedUser]
+      }
+      await store.dispatch('profileModule/getComments', config)
       // setTimeout(() => {
       //   overlay.value = false
       // }, 2000);
-      setTimeout(() => {
+      await setTimeout(() => {
         overlay.value = false
       }, 200)
-      store.commit('profileModule/changeDrawer', index)
+      if (props.isSearchedUser) {
+        store.commit('profileModule/changeDrawerUserSearched', index)
+        } else {
+        store.commit('profileModule/changeDrawer', index)
+      }
       showDrawer.value = true
     }
 
     const addComent = async () => {
       // comprobar que tenga un comentario mayor a 10 caracteres
-      console.log()
+      // console.log()
 
       if (comentarioUsuario.value.length >= 10) {
         isLoading.value = true
@@ -242,11 +289,8 @@ export default {
       }
     }
 
-    const setLike = async (id,index) => {
-      await store.dispatch('profileModule/setLike', [
-        id,
-        index
-      ])
+    const setLike = async (id, index) => {
+      await store.dispatch('profileModule/setLike', [id, index,props.isSearchedUser])
     }
 
     const comentarioUsuarioRules = [
@@ -268,9 +312,22 @@ export default {
       setLike,
 
       getImgMainProfile,
-      getPublicaciones: computed(
-        () => store.getters['profileModule/getPublicaciones']
-      ),
+      getImgMainProfileUserSearched,
+      // getPublicaciones: computed(() => {
+      //   if (props.isSearchedUser) {
+      //     console.log('isSearchedUser')
+      //   } else {
+      //     store.getters['profileModule/getPublicaciones']
+      //   }
+      // }),
+      getPublicaciones: computed(() => {
+        if (props.isSearchedUser) {
+          return store.getters['profileModule/getPublicacionesUserSearched']
+        } else {
+          return store.getters['profileModule/getPublicaciones']
+        }
+      }),
+
       drawer,
       showDrawer,
 
@@ -280,6 +337,39 @@ export default {
       isLoadingPosts
       // test
       // test,
+    }
+  },
+  data() {
+    return {
+      searchedUser: router.currentRoute.params.username
+    }
+  },
+  watch: {
+    $route: function (to, from) {
+      // console.log(to.params.username)
+      const v = localStorage.getItem('userName')
+      // console.log(this.user)
+      // if (v != this.user){
+      //   console.log('cambio de usuario')
+      //   store.dispatch('profileModule/getPostByUsername', [10, 10])
+      // } else {
+      //   store.dispatch('profileModule/getPostByUsername', [0, 10])
+      // }
+    }
+  },
+  mounted() {
+    // sacar user de local storage si esta
+    const v = localStorage.getItem('userName')
+    // console.log(v)
+    // console.log(this.user)
+    // console.log(this.user);
+    if (v == this.user) {
+      // console.log('cambio de usuario')
+      // store.dispatch('profileModule/getPostByUsername', [10, 10])
+      store.dispatch('profileModule/getPostByUsername', [0, 10])
+    } else {
+      // store.dispatch('profileModule/getPostByUsername', [0, 10])
+      store.dispatch('profileModule/getPostByUsername', [0, 10, this.user])
     }
   }
 }

@@ -16,24 +16,44 @@ export const setFoto_banner = (state, foto_banner) => {
   state.foto_banner = foto_banner
 }
 export const clearProfile = state => {
-  state.username = null
-  state.email = null
-  state.descipcion = null
-  state.foto_perfil = null
-  state.foto_banner = null
+  // esablecer a null todo el state
+  // console.log('clearProfile')
+  state.searchedUser = null,
+  state.username = null,
+  state.email = null,
+  state.descipcion = null,
+  state.foto_perfil = null,
+  state.foto_banner = null,
+  state.publicaciones = []
+
+}
+export const clearPublicaciones = state => {
+  state.publicaciones = []
+}
+export const clearPublicacionesUserSearched = state => {
+  state.searchedUser.publicaciones = []
 }
 export const setPublicaciones = (state, publicaciones) => {
   for (const publicacion of publicaciones) {
     state.publicaciones.push(publicacion)
   }
 }
-
+export const setPublicacionesUserSearched = (state, publicaciones) => {
+  for (const publicacion of publicaciones) {
+    state.searchedUser.publicaciones.push(publicacion)
+  }
+}
 export const changeDrawer = (state, index) => {
   state.publicaciones[index].drawer = !state.publicaciones[index].drawer
 }
-
+export const changeDrawerUserSearched = (state, index) => {
+  state.searchedUser.publicaciones[index].drawer = !state.searchedUser.publicaciones[index].drawer
+}
 export const setComments = (state, [comments, index]) => {
   state.publicaciones[index].comments = comments
+}
+export const setCommentsUserSearched = (state, [comments, index]) => {
+  state.searchedUser.publicaciones[index].comments = comments
 }
 
 export const addComment = (state, [index, comment]) => {
@@ -47,5 +67,17 @@ export const addComment = (state, [index, comment]) => {
 }
 
 export const setLike = (state, index) => {
+  console.log('state.publicaciones[index].likes)')
   state.publicaciones[index].active = !state.publicaciones[index].active
+}
+export const setLikeUserSearched = (state, index) => {
+  console.log('setLikeUserSearched')
+  state.searchedUser.publicaciones[index].active = !state.searchedUser.publicaciones[index].active
+}
+export const setSearchedUser = (state, datos) => {
+  state.searchedUser.username = datos.username
+  state.searchedUser.descipcion = datos.descripcion
+  state.searchedUser.foto_perfil = datos.foto_perfil
+  state.searchedUser.foto_banner = datos.foto_banner
+  
 }

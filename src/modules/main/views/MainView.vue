@@ -2,6 +2,7 @@
   <div>
     <NavBar />
     <!-- <ProfileView /> -->
+    <FabSearch />
     <router-view />
   </div>
 </template>
@@ -9,11 +10,13 @@
 <script>
 import NavBar from '../components/NavBar.vue'
 import ProfileView from '../modules/profile/views/ProfileView.vue'
+import FabSearch from '../components/FabSearch.vue'
 export default {
   name: 'MainView',
   components: {
     NavBar,
-    ProfileView
+    
+    FabSearch
   }
 }
 </script>

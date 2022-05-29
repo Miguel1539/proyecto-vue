@@ -4,6 +4,7 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 import authModule from '@/modules/auth/store/auth'
 import profileModule from '@/modules/main/store/profile'
+import listaUsuariosModule from '@/modules/main/store/usuarios'
 export default new Vuex.Store({
   state: {
   },
@@ -15,6 +16,7 @@ export default new Vuex.Store({
   },
   modules: {
     authModule,
-    profileModule
+    profileModule,
+    listaUsuariosModule
   }
 })

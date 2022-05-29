@@ -1,6 +1,7 @@
 // export const myAction = async({ commit }) =>{}
 import authApi from '@/apis/authApi'
 import store from '@/store'
+import router from '@/router'
 
 export const getProfile = async ({ commit }) => {
   try {
@@ -82,19 +83,42 @@ export const updateProfile = async ({ commit }, [valor, opcion]) => {
   }
 }
 
-export const getPostByUsername = async ({ commit }, [inicio, fin]) => {
+export const getPostByUsername = async (
+  { commit },
+  [inicio, fin, searchedUser]
+) => {
   try {
-    const response = await authApi.get('/post', {
-      params: {
-        token: store.getters['authModule/getToken'],
-        user: store.getters['authModule/getUserName'],
-        inicio,
-        fin
+    let config
+    if (searchedUser) {
+      // console.log('entro')
+      config = {
+        params: {
+          token: store.getters['authModule/getToken'],
+          user: store.getters['authModule/getUserName'],
+          inicio,
+          fin,
+          searchedUser
+        }
       }
-    })
-    // console.log(response.data.status)
+    } else {
+      config = {
+        params: {
+          token: store.getters['authModule/getToken'],
+          user: store.getters['authModule/getUserName'],
+          inicio,
+          fin
+        }
+      }
+    }
+    const response = await authApi.get('/post', config)
+    // const { data } = response
+    // console.log(data)
     if (response.data.status === 'OK') {
-      commit('setPublicaciones', response.data.result)
+      if (searchedUser) {
+        commit('setPublicacionesUserSearched', response.data.result)
+      } else {
+        commit('setPublicaciones', response.data.result)
+      }
       // console.log('ok')
       return false
     } else {
@@ -124,7 +148,10 @@ export const uploadPost = async ({ commit }, [img, descripcion]) => {
   }
 }
 
-export const getComments = async ({ commit }, [id, index, inicio, fin]) => {
+export const getComments = async (
+  { commit },
+  [id, index, isSearchedUser, inicio, fin]
+) => {
   // console.log(id)
   try {
     const response = await authApi.get('/comment', {
@@ -134,8 +161,13 @@ export const getComments = async ({ commit }, [id, index, inicio, fin]) => {
         id_post: id
       }
     })
-    // console.log(response.data)
-    commit('setComments', [response.data.result, index])
+    // console.log(response.data.result)
+    if (isSearchedUser) {
+      commit('setCommentsUserSearched', [response.data.result, index])
+    } else {
+      // console.log('entro')
+      commit('setComments', [response.data.result, index])
+    }
   } catch (error) {
     console.log(error)
   }
@@ -166,7 +198,7 @@ export const addComment = async ({ commit }, [id, index, descripcion]) => {
   }
 }
 
-export const setLike = async ({ commit }, [id_post, index]) => {
+export const setLike = async ({ commit }, [id_post, index, isSearchedUser]) => {
   try {
     const response = await authApi.post('/like', {
       user: store.getters['authModule/getUserName'],
@@ -175,7 +207,43 @@ export const setLike = async ({ commit }, [id_post, index]) => {
     })
     // console.log(response)
     // getPostByUsername({ commit }, [0, 10])
-    commit('setLike',index)
+    if (isSearchedUser) {
+      commit('setLikeUserSearched', index)
+    } else {
+      commit('setLike', index)
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const searchedUser = async ({ commit }, [username]) => {
+  try {
+    const { data } = await authApi.get('/users', {
+      params: {
+        token: store.getters['authModule/getToken'],
+        user: store.getters['authModule/getUserName'],
+        all: true,
+        searchedUser: username
+      }
+    })
+    // console.log(data)
+    const {
+      result: { error_msg, datos },
+      status
+    } = data
+    // console.log(datos)
+    if (
+      status === 'error' ||
+      datos.username === store.getters['authModule/getUserName']
+    ) {
+      // redirigir a la ruta profile
+      router.push({ name: 'profile' })
+    } else {
+      commit('setSearchedUser', datos)
+      return true
+    }
+    // commit('setSearchedUser', response.data.result)
   } catch (error) {
     console.log(error)
   }

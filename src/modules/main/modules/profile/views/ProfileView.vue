@@ -7,41 +7,70 @@
           style="max-height: calc(86vh)"
           class="overflow-y-auto"
         >
+          <!-- {{ isSearchedUser }} -->
           <!-- v-scroll:#scroll-target="" -->
-          <v-row justify="center" style="height: 1000px">
+          <!-- <v-row justify="center" style="height: 1000px"> -->
+          <v-row justify="center" >
             <v-col>
               <v-card class="mx-auto" max-width="800" tile>
-                <v-img style="height: 190px" :src="getImgBanner"></v-img>
+                <v-img
+                  style="height: 190px"
+                  :src="
+                    isSearchedUser ? getImgBannerUserSearched : getImgBanner
+                  "
+                ></v-img>
                 <v-col>
                   <v-avatar size="100" class="avatar">
-                    <v-img class="marco" :src="getImgMainProfile"></v-img>
+                    <v-img
+                      class="marco"
+                      :src="
+                        isSearchedUser
+                          ? getImgMainProfileUserSearched
+                          : getImgMainProfile
+                      "
+                    ></v-img>
                     <!-- src="../../../assets/genericUser2.jpg" -->
                   </v-avatar>
                 </v-col>
                 <v-list-item color="rgba(0, 0, 0, .4)">
                   <v-list-item-content>
-                    <v-list-item-title class="title">{{
-                      username
-                    }}</v-list-item-title>
+                    <v-list-item-title class="title">
+                      {{ isSearchedUser ? getUserNameUserSearched : username }}
+                    </v-list-item-title>
                     <v-list-item-subtitle>
-                      {{descipcion}}
+                      {{
+                        isSearchedUser ? getDescripcionUserSearched : descipcion
+                      }}
                     </v-list-item-subtitle>
                     <v-list-item-subtitle class="mt-3">
                       <strong style="color: black">0</strong> Seguidores
                       <strong style="color: black">0</strong> Seguidos
                     </v-list-item-subtitle>
                   </v-list-item-content>
-                  <DialogProfile color="green" icon="mdi-pencil" option="editProfile" :description="descipcion"/>
+                  <DialogProfile
+                    v-if="!isSearchedUser"
+                    color="green"
+                    icon="mdi-pencil"
+                    option="editProfile"
+                    :description="descipcion"
+                  />
                 </v-list-item>
               </v-card>
               <div class="publicar">
-                <DialogProfile color="green" icon="mdi-upload" option="addPost" />
+                <DialogProfile
+                  v-if="!isSearchedUser"
+                  color="green"
+                  icon="mdi-upload"
+                  option="addPost"
+                />
               </div>
-                
-            <PostComponent :user="username" :imgAvatar="getImgMainProfile" />
-              
+              <PostComponent :key="key"
+                v-if="checkedUser"
+                :user="isSearchedUser ? getUserNameUserSearched : username"
+                :imgAvatar="getImgMainProfile"
+                :isSearchedUser="isSearchedUser"
+              />
             </v-col>
-
           </v-row>
         </v-container>
       </v-col>
@@ -55,6 +84,7 @@ import store from '@/store'
 import useProfile from '../../../composables/useProfile'
 import DialogProfile from '../components/DialogProfile'
 import PostComponent from '../components/PostComponent'
+import router from '@/router'
 
 export default {
   name: 'ProfileView',
@@ -62,10 +92,16 @@ export default {
     DialogProfile,
     PostComponent
   },
-  setup() {
+  setup(props, context) {
     const fab = ref(false)
-    const { getImgMainProfile, getImgBanner } = useProfile()
-
+    const {
+      getImgMainProfile,
+      getImgBanner,
+      getImgMainProfileUserSearched,
+      getImgBannerUserSearched,
+      getUserNameUserSearched,
+      getDescripcionUserSearched
+    } = useProfile()
     return {
       fab,
 
@@ -73,14 +109,70 @@ export default {
       descipcion: computed(() => store.getters['profileModule/getDescripcion']),
 
       getImgMainProfile,
-      getImgBanner
+      getImgBanner,
+      getImgMainProfileUserSearched,
+      getImgBannerUserSearched,
+      getUserNameUserSearched,
+      getDescripcionUserSearched
+
+      // usernameRouter,
+    }
+  },
+
+  // PRACTICAMENTE OBLICADO A USAR LA VERSION DATA
+  data() {
+    return {
+      key: 0,
+      acutalPath: router.currentRoute.fullPath,
+      isSearchedUser: false,
+      checkedUser: false
+    }
+  },
+  // watch url to change
+  watch: {
+    $route: function (to, from) {
+      this.key++
+      this.checkedUser = false
+      store.commit('profileModule/clearPublicaciones')
+      store.commit('profileModule/clearPublicacionesUserSearched')
+      this.acutalPath = to.fullPath
+      // console.log(this.acutalPath)
+      // console.log(to.params.username)
+      if (to.params.username) {
+        store
+          .dispatch('profileModule/searchedUser', [to.params.username])
+          .then(result => {
+            this.isSearchedUser = result
+            this.checkedUser = true
+          })
+      } else {
+        this.isSearchedUser = false
+        this.checkedUser = true
+      }
+    }
+  },
+  mounted() {
+          this.checkedUser = false
+
+    if (router.currentRoute.params.username) {
+      store
+        .dispatch('profileModule/searchedUser', [
+          router.currentRoute.params.username
+        ])
+        .then(result => {
+          this.isSearchedUser = result
+          this.checkedUser = true
+        })
+    } else {
+      this.isSearchedUser = false
+      this.checkedUser = true
     }
   }
 }
 </script>
 <style lang="scss" scoped>
 ::-webkit-scrollbar {
-  width: 15px;
+  width: 8px;
 }
 ::-webkit-scrollbar-track {
   border-radius: 10px;
@@ -104,7 +196,7 @@ export default {
   border-style: solid;
   border-color: white;
 }
-.publicar{
+.publicar {
   display: flex;
   justify-content: center;
   align-items: center;

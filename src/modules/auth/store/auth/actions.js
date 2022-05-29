@@ -185,6 +185,8 @@ export const checkAuthentication = async ({ commit }) => {
   const userName = localStorage.getItem('userName')
   if (!token || !userName) {
     commit('logout')
+    // hacer un commt a clearProfile del modulo profileModule
+    store.commit('profileModule/clearProfile')
     return { status: 'error' }
   }
   try {
@@ -197,6 +199,7 @@ export const checkAuthentication = async ({ commit }) => {
     const { data } = response
     if (data.status === 'error') {
       commit('logout')
+      store.commit('profileModule/clearProfile')
       return { status: 'error' }
     } else {
       commit('setToken', token)
