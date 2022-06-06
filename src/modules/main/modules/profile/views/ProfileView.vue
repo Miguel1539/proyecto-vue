@@ -133,6 +133,7 @@ export default {
     $route: function (to, from) {
       this.key++
       this.checkedUser = false
+      console.log('hola');
       store.commit('profileModule/clearPublicaciones')
       store.commit('profileModule/clearPublicacionesUserSearched')
       this.acutalPath = to.fullPath

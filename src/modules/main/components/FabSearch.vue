@@ -66,7 +66,7 @@ export default {
   setup() {
     const debounceTimeout = ref()
     const debounceValue = ref()
-    const dialog = ref(true)
+    const dialog = ref(false)
     const send = username => {
       dialog.value = !dialog.value
       router.push(`/profile-${username}`)
@@ -95,66 +95,66 @@ export default {
       })
     }
   },
-  data: () => ({
-    items: [
-      {
-        image:
-          'https://cdn-images-1.medium.com/max/1024/1*9C9hLji68wV373tk8okLYA.jpeg',
-        description: 'TBI’s 5 Best: Sary Strong',
-        username: 'paco3'
-      },
-      {
-        image:
-          'https://cdn-images-1.medium.com/max/1024/1*BBNtYUieAqHoXKjiJ2mMjQ.png',
-        description: 'PWAs onod”',
-        username: 'miguel2'
-      },
-      {
-        image:
-          'https://cdn-images-1.medium.com/max/1024/1*rTEtei1UEmNqbq6evRsExw.jpeg',
-        description: 'How to Get Medur Business',
-        username: 'Media'
-      },
-      {
-        image:
-          'https://cdn-images-1.medium.com/max/1024/1*FD2nkJewVeQnGf0ommQfrw.jpeg',
-        description: 'The Pitfalls Of Outsicial Intelligence',
-        username: 'Technology'
-      },
-      {
-        image:
-          'https://cdn-images-1.medium.com/max/1024/1*eogFpsVgNzXQLCVgFzT_-A.jpeg',
-        description: 'Degrees of Freedom and Sudoko',
-        username: 'Travel'
-      }
-    ],
-    search: ''
-  }),
-  computed: {
-    // keywords() {
-    //   if (!this.search) return []
+  // data: () => ({
+  //   items: [
+  //     {
+  //       image:
+  //         'https://cdn-images-1.medium.com/max/1024/1*9C9hLji68wV373tk8okLYA.jpeg',
+  //       description: 'TBI’s 5 Best: Sary Strong',
+  //       username: 'paco3'
+  //     },
+  //     {
+  //       image:
+  //         'https://cdn-images-1.medium.com/max/1024/1*BBNtYUieAqHoXKjiJ2mMjQ.png',
+  //       description: 'PWAs onod”',
+  //       username: 'miguel2'
+  //     },
+  //     {
+  //       image:
+  //         'https://cdn-images-1.medium.com/max/1024/1*rTEtei1UEmNqbq6evRsExw.jpeg',
+  //       description: 'How to Get Medur Business',
+  //       username: 'Media'
+  //     },
+  //     {
+  //       image:
+  //         'https://cdn-images-1.medium.com/max/1024/1*FD2nkJewVeQnGf0ommQfrw.jpeg',
+  //       description: 'The Pitfalls Of Outsicial Intelligence',
+  //       username: 'Technology'
+  //     },
+  //     {
+  //       image:
+  //         'https://cdn-images-1.medium.com/max/1024/1*eogFpsVgNzXQLCVgFzT_-A.jpeg',
+  //       description: 'Degrees of Freedom and Sudoko',
+  //       username: 'Travel'
+  //     }
+  //   ],
+  //   search: ''
+  // }),
+  // computed: {
+  //   // keywords() {
+  //   //   if (!this.search) return []
 
-    //   const keywords = []
+  //   //   const keywords = []
 
-    //   for (const search of this.searching) {
-    //     keywords.push(search.keyword)
-    //   }
+  //   //   for (const search of this.searching) {
+  //   //     keywords.push(search.keyword)
+  //   //   }
 
-    //   return keywords
-    // },
-    searching() {
-      // console.log('searching')
-      if (!this.search) return this.items
+  //   //   return keywords
+  //   // },
+  //   searching() {
+  //     // console.log('searching')
+  //     if (!this.search) return this.items
 
-      const search = this.search.toLowerCase()
+  //     const search = this.search.toLowerCase()
 
-      return this.items.filter(item => {
-        const text = item.username.toLowerCase()
+  //     return this.items.filter(item => {
+  //       const text = item.username.toLowerCase()
 
-        return text.indexOf(search) > -1
-      })
-    }
-  }
+  //       return text.indexOf(search) > -1
+  //     })
+  //   }
+  // }
 }
 </script>
 

@@ -18,17 +18,34 @@
             <template>
               <v-list-item two-line>
                 <v-list-item-avatar>
-                  <v-img
+                  <!-- <v-img
                     :src="
                       isSearchedUser
                         ? getImgMainProfileUserSearched
                         : getImgMainProfile
                     "
+                  /> -->
+                  <v-img v-if="imgComputedAvatar" :src="imgComputedAvatar" />
+                  <v-img
+                    v-else
+                    :src="item.foto_perfil"
+                    @click="
+                      $router.push({
+                        name: 'profile-user',
+                        params: { username: item.username }
+                      })
+                    "
+                    class="click"
                   />
+                  <!-- <router-link  v-else  :to="{name: 'profile'}">
+                    <v-img :src="item.foto_perfil"/>
+                  </router-link> -->
                 </v-list-item-avatar>
 
                 <v-list-item-content>
-                  <v-list-item-title>{{ user }}</v-list-item-title>
+                  <v-list-item-title
+                    >{{ getUsername }} {{ item.username }}</v-list-item-title
+                  >
                 </v-list-item-content>
               </v-list-item>
             </template>
@@ -65,7 +82,7 @@
     <v-navigation-drawer v-model="showDrawer" fixed temporary right width="400">
       <v-list-item>
         <v-list-item-avatar>
-          <v-img :src="imgAvatar"></v-img>
+          <v-img :src="getImgMainProfile"></v-img>
         </v-list-item-avatar>
         <v-list-item>
           <v-text-field
@@ -194,14 +211,13 @@ export default {
     const onScroll = async e => {
       // offsetTop.value = e.target.scrollTop
       // sacar el tamaño maxiomo de el scroll
-
       const maxScroll = e.target.scrollHeight - e.target.clientHeight
       // calcular el porcentaje de scroll
       const scrollPercent = Math.round((e.target.scrollTop / maxScroll) * 100)
 
       // console.log(scrollPercent)
       // if (e.target.scrollTop == maxScroll) {
-      if (scrollPercent == 92) {
+      if (scrollPercent == 94) {
         if (stopPage.value) {
           return
         } else {
@@ -210,13 +226,19 @@ export default {
           if (props.isSearchedUser) {
             config = [page.value, 10, props.user]
           } else {
-            config = [page.value, 10]
+            if (props.user != 'all') config = [page.value, 10]
+            else config = [page.value, 10, 'al']
           }
           // console.log(config)
-          const result = await store.dispatch(
-            'profileModule/getPostByUsername',
-            config
-          )
+          let result
+          if (props.user != 'all') {
+            result = await store.dispatch(
+              'profileModule/getPostByUsername',
+              config
+            )
+          } else {
+            result = await store.dispatch('mainPostModule/getMainPost', config)
+          }
           page.value += 10
           stopPage.value = result
           isLoadingPosts.value = false
@@ -250,19 +272,32 @@ export default {
       } else {
         config = [ID_publicacion, index, props.isSearchedUser]
       }
-      await store.dispatch('profileModule/getComments', config)
-      // setTimeout(() => {
-      //   overlay.value = false
-      // }, 2000);
-      await setTimeout(() => {
-        overlay.value = false
-      }, 200)
-      if (props.isSearchedUser) {
-        store.commit('profileModule/changeDrawerUserSearched', index)
+      if (props.user === 'all') {
+        config = [ID_publicacion, index]
+        await store.dispatch('mainPostModule/getComments', config)
+        await setTimeout(() => {
+          overlay.value = false
+        }, 200)
+
+        store.commit('mainPostModule/changeDrawer', index)
+
+        showDrawer.value = true
+      } else {
+        await store.dispatch('profileModule/getComments', config)
+
+        // setTimeout(() => {
+        //   overlay.value = false
+        // }, 2000);
+        await setTimeout(() => {
+          overlay.value = false
+        }, 200)
+        if (props.isSearchedUser) {
+          store.commit('profileModule/changeDrawerUserSearched', index)
         } else {
-        store.commit('profileModule/changeDrawer', index)
+          store.commit('profileModule/changeDrawer', index)
+        }
+        showDrawer.value = true
       }
-      showDrawer.value = true
     }
 
     const addComent = async () => {
@@ -271,11 +306,21 @@ export default {
 
       if (comentarioUsuario.value.length >= 10) {
         isLoading.value = true
-        await store.dispatch('profileModule/addComment', [
-          ID_publicacionSelected,
-          indexPublicacionSelected.value,
-          comentarioUsuario.value
-        ])
+        if (props.user === 'all') {
+          await store.dispatch('mainPostModule/addComment', [
+            ID_publicacionSelected,
+            indexPublicacionSelected.value,
+            comentarioUsuario.value,
+            props.isSearchedUser
+          ])
+        } else {
+          await store.dispatch('profileModule/addComment', [
+            ID_publicacionSelected,
+            indexPublicacionSelected.value,
+            comentarioUsuario.value,
+            props.isSearchedUser
+          ])
+        }
 
         // fake http request promise 4 seconds
         // await new Promise(resolve => setTimeout(resolve, 4000))
@@ -290,7 +335,15 @@ export default {
     }
 
     const setLike = async (id, index) => {
-      await store.dispatch('profileModule/setLike', [id, index,props.isSearchedUser])
+      if (props.user === 'all') {
+        await store.dispatch('mainPostModule/setLike', [id, index])
+      } else {
+        await store.dispatch('profileModule/setLike', [
+          id,
+          index,
+          props.isSearchedUser
+        ])
+      }
     }
 
     const comentarioUsuarioRules = [
@@ -322,12 +375,38 @@ export default {
       // }),
       getPublicaciones: computed(() => {
         if (props.isSearchedUser) {
+          // console.log(props.isSearchedUser)
           return store.getters['profileModule/getPublicacionesUserSearched']
         } else {
-          return store.getters['profileModule/getPublicaciones']
+          // console.log('no es buscado')
+          if (props.user === 'all') {
+            return store.getters['mainPostModule/getPublicaciones']
+          } else {
+            return store.getters['profileModule/getPublicaciones']
+          }
         }
       }),
 
+      getUsername: computed(() => {
+        if (props.isSearchedUser) {
+          return props.user
+        } else {
+          if (props.user != 'all') {
+            return props.user
+          }
+        }
+      }),
+      imgComputedAvatar: computed(() => {
+        if (props.isSearchedUser) {
+          return getImgMainProfileUserSearched.value
+        } else {
+          if (props.user != 'all') {
+            return getImgMainProfile.value
+          } else {
+            return false
+          }
+        }
+      }),
       drawer,
       showDrawer,
 
@@ -369,8 +448,23 @@ export default {
       store.dispatch('profileModule/getPostByUsername', [0, 10])
     } else {
       // store.dispatch('profileModule/getPostByUsername', [0, 10])
-      store.dispatch('profileModule/getPostByUsername', [0, 10, this.user])
+      // store.dispatch('profileModule/getPostByUsername', [0, 10, this.user])
+      if (this.user === 'all') {
+        // console.log('all')
+        store.commit('mainPostModule/clearPosts')
+        store.commit('profileModule/clearPublicacionesUserSearched')
+
+        store.dispatch('mainPostModule/getMainPost', [0, 10, 'al'])
+        // console.log('all')
+      } else {
+        store.dispatch('profileModule/getPostByUsername', [0, 10, this.user])
+      }
     }
   }
 }
 </script>
+<style lang="scss" scoped>
+.click {
+  cursor: pointer;
+}
+</style>

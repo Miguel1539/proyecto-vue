@@ -12,7 +12,7 @@
         </div>
         <template v-slot:action="{ attrs }">
           <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
-            Close
+            Cerrar
           </v-btn>
         </template>
       </v-snackbar>

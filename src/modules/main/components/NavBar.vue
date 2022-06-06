@@ -3,7 +3,9 @@
     <v-card class="mx-auto overflow-hidden">
       <v-app-bar color="blue" dark height="64px">
         <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
-        <v-toolbar-title>Title</v-toolbar-title>
+        <v-toolbar-title>
+          <v-img src="../../../assets/logo blanco.png"></v-img>
+        </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
           <v-list-item two-line class="nav-avatar">
@@ -76,12 +78,12 @@
             <v-list-item-title>Perfil</v-list-item-title>
           </v-list-item>
 
-          <v-list-item to="/profile-paco3">
+          <!-- <v-list-item to="/profile-paco3">
             <v-list-item-icon>
               <v-icon>mdi-account</v-icon>
             </v-list-item-icon>
             <v-list-item-title>pruebas perfiles</v-list-item-title>
-          </v-list-item>
+          </v-list-item> -->
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>

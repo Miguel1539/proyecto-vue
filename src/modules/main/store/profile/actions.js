@@ -41,6 +41,17 @@ export const updateProfile = async ({ commit }, [valor, opcion]) => {
   // console.log(opcion)
   switch (opcion) {
     case 'descripcion':
+      try {
+        const response = await authApi.put('/users', {
+          token: store.getters['authModule/getToken'],
+          user: store.getters['authModule/getUserName'],
+          description: valor
+        })
+        getProfile({ commit })
+
+      } catch (error) {
+        console.log(error)
+      }
       break
     case 'avatar':
       // preparar la imagen en un formdata
@@ -101,6 +112,7 @@ export const getPostByUsername = async (
         }
       }
     } else {
+      // console.log('entro')
       config = {
         params: {
           token: store.getters['authModule/getToken'],
@@ -112,7 +124,7 @@ export const getPostByUsername = async (
     }
     const response = await authApi.get('/post', config)
     // const { data } = response
-    // console.log(data)
+    // console.log(response)
     if (response.data.status === 'OK') {
       if (searchedUser) {
         commit('setPublicacionesUserSearched', response.data.result)
@@ -142,6 +154,9 @@ export const uploadPost = async ({ commit }, [img, descripcion]) => {
       }
     })
     // console.log(response)
+    // console.log('entro')
+    // commit para limpiar las publicaciones
+    commit('clearPublicaciones')
     getPostByUsername({ commit }, [0, 10])
   } catch (error) {
     console.log(error)
@@ -165,7 +180,6 @@ export const getComments = async (
     if (isSearchedUser) {
       commit('setCommentsUserSearched', [response.data.result, index])
     } else {
-      // console.log('entro')
       commit('setComments', [response.data.result, index])
     }
   } catch (error) {
@@ -173,7 +187,7 @@ export const getComments = async (
   }
 }
 
-export const addComment = async ({ commit }, [id, index, descripcion]) => {
+export const addComment = async ({ commit }, [id, index, descripcion,isSearchedUser]) => {
   // console.log(id, index, descripcion)
 
   try {
@@ -192,7 +206,7 @@ export const addComment = async ({ commit }, [id, index, descripcion]) => {
     // }
 
     // console.log(response)
-    getComments({ commit }, [id, index, 0, 10])
+    getComments({ commit }, [id, index,isSearchedUser, 0, 10])
   } catch (error) {
     console.log(error)
   }

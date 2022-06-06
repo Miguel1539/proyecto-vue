@@ -36,10 +36,14 @@
                     />
                     <v-row justify="center" style="text-align: center">
                       <v-col cols="12" sm="5">
-                        <a class="caption blue--text" @click="recoverPassword">Forgot password</a>
+                        <a class="caption blue--text" @click="recoverPassword">
+                          ¿Has olvidado tu contraseña?</a
+                        >
                       </v-col>
                       <v-col cols="12" sm="5">
-                        <a class="caption blue--text" @click="recoverUserNames">Forgot Username</a>
+                        <a class="caption blue--text" @click="recoverUserNames"
+                          >¿Olvidó su nombre de usuario?</a
+                        >
                       </v-col>
                     </v-row>
                     <v-row>
@@ -52,7 +56,8 @@
                           type="submit"
                           :disabled="!validLogin || isLoading"
                           style="color: white"
-                          >Log in</v-btn
+                        >
+                          iniciar sesión</v-btn
                         >
                       </v-col>
                     </v-row>
@@ -75,7 +80,7 @@
                 </h4>
               </v-card-text>
               <div class="text-center">
-                <v-btn tile outlined dark @click="step++">SIGN UP</v-btn>
+                <v-btn tile outlined dark @click="step++">Crear cuenta</v-btn>
               </div>
             </div>
           </v-col>
@@ -97,7 +102,7 @@
                 <h4 class="text-center">Inicia sesión en tu cuenta</h4>
               </v-card-text>
               <div class="text-center">
-                <v-btn tile outlined dark @click="step--">Log in</v-btn>
+                <v-btn tile outlined dark @click="step--">Iniciar sesión</v-btn>
               </div>
             </div>
           </v-col>
@@ -166,7 +171,7 @@
                     <v-row>
                       <v-col cols="12" sm="7">
                         <v-checkbox
-                          label="I Accept Terms & Conditions"
+                          label="Acepto los términos y condiciones de uso"
                           class="mt-n1"
                           color="blue"
                           v-model="formRegister.termsAndConditions"
@@ -175,10 +180,12 @@
                         </v-checkbox>
                       </v-col>
                       <v-col cols="12" sm="5">
-                        <span
+                        <a
+                          href="Terms&Conditions.html"
+                          target="_blank"
                           class="caption blue--text ml-n4"
                           style="margin-left: 0 !important"
-                          >Terms & Conditions</span
+                          >Términos y condiciones de uso</a
                         >
                       </v-col>
                     </v-row>
@@ -212,7 +219,6 @@ import useAuth from '../composables/useAuth'
 
 export default {
   setup() {
-    
     const {
       step,
       formLogin,
@@ -226,7 +232,6 @@ export default {
       isLoading,
       recoverPassword,
       recoverUserNames
-      
     } = useAuth()
     return {
       step,
@@ -277,5 +282,4 @@ export default {
     height: 60vh;
   }
 }
-
 </style>
