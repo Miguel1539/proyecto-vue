@@ -42,9 +42,13 @@
                         isSearchedUser ? getDescripcionUserSearched : descipcion
                       }}
                     </v-list-item-subtitle>
-                    <v-list-item-subtitle class="mt-3">
-                      <strong style="color: black">0</strong> Seguidores
-                      <strong style="color: black">0</strong> Seguidos
+                    <v-list-item-subtitle class="mt-3" v-if="!isSearchedUser">
+                      <strong style="color: black">{{getSeguidores}}</strong> Seguidores
+                      <strong style="color: black">{{getSeguidos}}</strong> Seguidos
+                    </v-list-item-subtitle>
+                    <v-list-item-subtitle class="mt-3" v-else>
+                      <strong style="color: black">{{getSeguidoresUserSearched}}</strong> Seguidores
+                      <strong style="color: black">{{getSeguidosUserSearched}}</strong> Seguidos
                     </v-list-item-subtitle>
                   </v-list-item-content>
                   <DialogProfile
@@ -100,7 +104,11 @@ export default {
       getImgMainProfileUserSearched,
       getImgBannerUserSearched,
       getUserNameUserSearched,
-      getDescripcionUserSearched
+      getDescripcionUserSearched,
+      getSeguidores,
+      getSeguidos,
+      getSeguidoresUserSearched,
+      getSeguidosUserSearched
     } = useProfile()
     return {
       fab,
@@ -113,7 +121,11 @@ export default {
       getImgMainProfileUserSearched,
       getImgBannerUserSearched,
       getUserNameUserSearched,
-      getDescripcionUserSearched
+      getDescripcionUserSearched,
+      getSeguidores,
+      getSeguidos,
+      getSeguidoresUserSearched,
+      getSeguidosUserSearched
 
       // usernameRouter,
     }

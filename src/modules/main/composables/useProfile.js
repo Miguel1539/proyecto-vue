@@ -47,6 +47,18 @@ const useAuth = () => {
     }),
     getDescripcionUserSearched: computed(() => {
       return store.getters['profileModule/getDescripcionUserSearched']
+    }),
+    getSeguidores: computed(() => {
+      return store.getters['profileModule/getSeguidores']
+    }),
+    getSeguidos: computed(() => {
+      return store.getters['profileModule/getSeguidos']
+    }),
+    getSeguidoresUserSearched: computed(() => {
+      return store.getters['profileModule/getSeguidoresUserSearched']
+    }),
+    getSeguidosUserSearched: computed(() => {
+      return store.getters['profileModule/getSeguidosUserSearched']
     })
   }
 }

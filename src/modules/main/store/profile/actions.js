@@ -15,7 +15,7 @@ export const getProfile = async ({ commit }) => {
     const {
       data: {
         result: {
-          datos: { email, foto_perfil, username, foto_banner, descripcion }
+          datos: { email, foto_perfil, username, foto_banner, descripcion, seguidores, seguidos }
         }
       }
     } = response
@@ -31,6 +31,8 @@ export const getProfile = async ({ commit }) => {
     }
     commit('setEmail', email)
     commit('setUserName', username)
+    commit('setSeguidores', seguidores)
+    commit('setSeguidos', seguidos)
   } catch (error) {
     console.log('error')
     console.log(error)

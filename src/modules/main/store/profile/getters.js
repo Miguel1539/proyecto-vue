@@ -11,3 +11,7 @@ export const getImgBannerUserSearched = state => state.searchedUser.foto_banner
 export const getDescripcionUserSearched = state => state.searchedUser.descipcion
 export const getUserNameUserSearched = state => state.searchedUser.username
 export const getPublicacionesUserSearched = state => state.searchedUser.publicaciones
+export const getSeguidores = state => state.seguidores
+export const getSeguidos = state => state.seguidos
+export const getSeguidoresUserSearched = state => state.searchedUser.seguidores
+export const getSeguidosUserSearched = state => state.searchedUser.seguidos

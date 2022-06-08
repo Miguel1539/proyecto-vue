@@ -86,4 +86,12 @@ export const setSearchedUser = (state, datos) => {
   state.searchedUser.descipcion = datos.descripcion
   state.searchedUser.foto_perfil = datos.foto_perfil
   state.searchedUser.foto_banner = datos.foto_banner
+  state.searchedUser.seguidores = datos.seguidores
+  state.searchedUser.seguidos = datos.seguidos
+}
+export const setSeguidores = (state, seguidores) => {
+  state.seguidores = seguidores
+}
+export const setSeguidos = (state, seguidos) => {
+  state.seguidos = seguidos
 }
