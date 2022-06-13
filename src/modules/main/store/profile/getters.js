@@ -15,3 +15,6 @@ export const getSeguidores = state => state.seguidores
 export const getSeguidos = state => state.seguidos
 export const getSeguidoresUserSearched = state => state.searchedUser.seguidores
 export const getSeguidosUserSearched = state => state.searchedUser.seguidos
+export const getIsFollowing = state => state.searchedUser.isFollowing
+export const getSeguidoresData = state => state.seguidoresData
+export const getSeguidosData = state => state.seguidosData

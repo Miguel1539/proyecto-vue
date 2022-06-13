@@ -186,6 +186,11 @@ export default {
     isSearchedUser: {
       type: Boolean,
       required: true
+    },
+    // add prop faovorites boolean optional
+    favorites: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {
@@ -227,7 +232,9 @@ export default {
             config = [page.value, 10, props.user]
           } else {
             if (props.user != 'all') config = [page.value, 10]
+            else if (props.favorites) config = [page.value, 10, 'fa']
             else config = [page.value, 10, 'al']
+            
           }
           // console.log(config)
           let result
@@ -454,7 +461,10 @@ export default {
         store.commit('mainPostModule/clearPosts')
         store.commit('profileModule/clearPublicacionesUserSearched')
 
-        store.dispatch('mainPostModule/getMainPost', [0, 10, 'al'])
+        this.favorites
+          ? store.dispatch('mainPostModule/getMainPost', [0, 10, 'fa'])
+          : store.dispatch('mainPostModule/getMainPost', [0, 10, 'al'])
+
         // console.log('all')
       } else {
         store.dispatch('profileModule/getPostByUsername', [0, 10, this.user])

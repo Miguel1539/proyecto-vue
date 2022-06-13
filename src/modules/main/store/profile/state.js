@@ -7,7 +7,9 @@ export default () => ({
   publicaciones: [],
   seguidores: 0,
   seguidos: 0,
-
+  seguidoresData: [],
+  seguidosData: [],
+  
   searchedUser: {
     username: '',
     descipcion: '',
@@ -15,6 +17,7 @@ export default () => ({
     foto_banner: '',
     publicaciones: [],
     seguidores: 0,
-    seguidos: 0
+    seguidos: 0,
+    isFollowing: null
   }
 })

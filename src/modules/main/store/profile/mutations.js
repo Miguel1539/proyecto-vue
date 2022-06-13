@@ -88,6 +88,7 @@ export const setSearchedUser = (state, datos) => {
   state.searchedUser.foto_banner = datos.foto_banner
   state.searchedUser.seguidores = datos.seguidores
   state.searchedUser.seguidos = datos.seguidos
+  state.searchedUser.isFollowing = datos.isFollowing
 }
 export const setSeguidores = (state, seguidores) => {
   state.seguidores = seguidores
@@ -95,3 +96,11 @@ export const setSeguidores = (state, seguidores) => {
 export const setSeguidos = (state, seguidos) => {
   state.seguidos = seguidos
 }
+
+export const setSeguidoresData = (state, seguidoresData) => {
+  state.seguidoresData = seguidoresData
+}
+export const setSeguidosData = (state, seguidosData) => {
+  state.seguidosData = seguidosData
+}
+

@@ -30,7 +30,8 @@ const useAuth = () => {
     userName: [
       v => !!v || 'El nombre es obligatorio',
       v => v.length >= 3 || 'El nombre debe tener al menos 3 caracteres',
-      v => v.length <= 50 || 'El nombre debe tener menos de 50 caracteres'
+      v => v.length <= 50 || 'El nombre debe tener menos de 50 caracteres',
+      v => !v.includes(' ') || 'El nombre no puede contener espacios'
     ],
     email: [
       v => !!v || 'El correo es obligatorio',

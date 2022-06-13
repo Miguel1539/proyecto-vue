@@ -1,11 +1,21 @@
 import store from '@/store'
-import { onMounted, computed } from '@vue/composition-api'
+import {ref, onMounted, computed } from '@vue/composition-api'
 
 const useAuth = () => {
   onMounted(() => {
     store.dispatch('profileModule/getProfile')
   })
+  const isLoadingFollow = ref(false)
+  const follow = async () => {
+    isLoadingFollow.value = true
+    await store.dispatch('profileModule/followUser',[null])
+    isLoadingFollow.value = false
+  }
   return {
+    isLoadingFollow,
+    follow,
+
+
     getImgMainProfile: computed(() => {
       // comprobar si exixte una imagen
       if (store.getters['profileModule/getImgMainProfile']) {
@@ -59,6 +69,9 @@ const useAuth = () => {
     }),
     getSeguidosUserSearched: computed(() => {
       return store.getters['profileModule/getSeguidosUserSearched']
+    }),
+    getIsFollowing: computed(() => {
+      return store.getters['profileModule/getIsFollowing']
     })
   }
 }

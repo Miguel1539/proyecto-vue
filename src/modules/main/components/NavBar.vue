@@ -77,6 +77,12 @@
             </v-list-item-icon>
             <v-list-item-title>Perfil</v-list-item-title>
           </v-list-item>
+          <v-list-item :to="{ name: 'favorites' }">
+            <v-list-item-icon>
+              <v-icon>mdi-heart</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Favoritos</v-list-item-title>
+          </v-list-item>
 
           <!-- <v-list-item to="/profile-paco3">
             <v-list-item-icon>

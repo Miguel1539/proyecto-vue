@@ -15,7 +15,7 @@ export const getProfile = async ({ commit }) => {
     const {
       data: {
         result: {
-          datos: { email, foto_perfil, username, foto_banner, descripcion, seguidores, seguidos }
+          datos: { email, foto_perfil, username, foto_banner, descripcion, seguidores, seguidos, seguidoresData, seguidosData }
         }
       }
     } = response
@@ -33,6 +33,8 @@ export const getProfile = async ({ commit }) => {
     commit('setUserName', username)
     commit('setSeguidores', seguidores)
     commit('setSeguidos', seguidos)
+    commit('setSeguidoresData', seguidoresData)
+    commit('setSeguidosData', seguidosData)
   } catch (error) {
     console.log('error')
     console.log(error)
@@ -262,5 +264,38 @@ export const searchedUser = async ({ commit }, [username]) => {
     // commit('setSearchedUser', response.data.result)
   } catch (error) {
     console.log(error)
+  }
+}
+
+export const followUser = async ({_,dispatch}, [userToFolow]) => {
+  // dispatch('searchedUser', [username])
+  if (userToFolow != null) {
+    try{
+      const response = await authApi.post('/follow', {
+        token: store.getters['authModule/getToken'],
+        user: store.getters['authModule/getUserName'],
+        userToFolow
+      })
+      dispatch('getProfile')
+    } catch (error) {
+      console.log(error)
+    }
+  
+
+  }else{
+    try {
+    const response = await authApi.post('/follow', {
+      token: store.getters['authModule/getToken'],
+      user: store.getters['authModule/getUserName'],
+      userToFolow: store.getters['profileModule/getUserNameUserSearched']
+    })
+    // console.log(response)
+      dispatch('searchedUser', [store.getters['profileModule/getUserNameUserSearched']])
+
+  } catch (error) {
+    console.log(error)
+  }
+    
+    
   }
 }

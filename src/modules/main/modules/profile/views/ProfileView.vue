@@ -10,7 +10,7 @@
           <!-- {{ isSearchedUser }} -->
           <!-- v-scroll:#scroll-target="" -->
           <!-- <v-row justify="center" style="height: 1000px"> -->
-          <v-row justify="center" >
+          <v-row justify="center">
             <v-col>
               <v-card class="mx-auto" max-width="800" tile>
                 <v-img
@@ -43,12 +43,48 @@
                       }}
                     </v-list-item-subtitle>
                     <v-list-item-subtitle class="mt-3" v-if="!isSearchedUser">
-                      <strong style="color: black">{{getSeguidores}}</strong> Seguidores
-                      <strong style="color: black">{{getSeguidos}}</strong> Seguidos
+                      <strong style="color: black">{{ getSeguidores }}</strong>
+                      <ListUsers action="Seguidores" />
+                      <br v-if="bajar" />
+                      <strong style="color: black">{{ getSeguidos }}</strong>
+
+                      <ListUsers action="Seguidos" />
                     </v-list-item-subtitle>
                     <v-list-item-subtitle class="mt-3" v-else>
-                      <strong style="color: black">{{getSeguidoresUserSearched}}</strong> Seguidores
-                      <strong style="color: black">{{getSeguidosUserSearched}}</strong> Seguidos
+                      <strong style="color: black">{{
+                        getSeguidoresUserSearched
+                      }}</strong>
+                      Seguidores
+                      <strong style="color: black">{{
+                        getSeguidosUserSearched
+                      }}</strong>
+                      Seguidos
+                    </v-list-item-subtitle>
+                    <v-list-item-subtitle v-if="isSearchedUser">
+                      <v-btn
+                        dark
+                        title
+                        rounded
+                        small
+                        color="black"
+                        :loading="isLoadingFollow"
+                        @click="follow"
+                        v-if="!getIsFollowing"
+                      >
+                        Seguir
+                      </v-btn>
+                      <v-btn
+                        dark
+                        title
+                        rounded
+                        small
+                        color="black"
+                        :loading="isLoadingFollow"
+                        @click="follow"
+                        v-else
+                      >
+                        Dejar de seguir
+                      </v-btn>
                     </v-list-item-subtitle>
                   </v-list-item-content>
                   <DialogProfile
@@ -68,7 +104,8 @@
                   option="addPost"
                 />
               </div>
-              <PostComponent :key="key"
+              <PostComponent
+                :key="key"
                 v-if="checkedUser"
                 :user="isSearchedUser ? getUserNameUserSearched : username"
                 :imgAvatar="getImgMainProfile"
@@ -83,21 +120,24 @@
 </template>
 
 <script>
-import { computed, ref } from '@vue/composition-api'
+import { computed, reactive, ref } from '@vue/composition-api'
 import store from '@/store'
 import useProfile from '../../../composables/useProfile'
 import DialogProfile from '../components/DialogProfile'
 import PostComponent from '../components/PostComponent'
+import ListUsers from '../components/ListUsers'
 import router from '@/router'
 
 export default {
   name: 'ProfileView',
   components: {
     DialogProfile,
-    PostComponent
+    PostComponent,
+    ListUsers
   },
   setup(props, context) {
     const fab = ref(false)
+
     const {
       getImgMainProfile,
       getImgBanner,
@@ -108,10 +148,16 @@ export default {
       getSeguidores,
       getSeguidos,
       getSeguidoresUserSearched,
-      getSeguidosUserSearched
+      getSeguidosUserSearched,
+      getIsFollowing,
+      follow,
+      isLoadingFollow
     } = useProfile()
+    // alert("La resolución de tu pantalla es: " + screen.width + " x " + screen.height)
     return {
       fab,
+      
+      
 
       username: computed(() => store.getters['authModule/getUserName']),
       descipcion: computed(() => store.getters['profileModule/getDescripcion']),
@@ -125,7 +171,10 @@ export default {
       getSeguidores,
       getSeguidos,
       getSeguidoresUserSearched,
-      getSeguidosUserSearched
+      getSeguidosUserSearched,
+      getIsFollowing,
+      follow,
+      isLoadingFollow
 
       // usernameRouter,
     }
@@ -137,7 +186,9 @@ export default {
       key: 0,
       acutalPath: router.currentRoute.fullPath,
       isSearchedUser: false,
-      checkedUser: false
+      checkedUser: false,
+      windowWidth: window.innerWidth,
+      bajar: false
     }
   },
   // watch url to change
@@ -145,7 +196,7 @@ export default {
     $route: function (to, from) {
       this.key++
       this.checkedUser = false
-      console.log('hola');
+      // console.log('hola')
       store.commit('profileModule/clearPublicaciones')
       store.commit('profileModule/clearPublicacionesUserSearched')
       this.acutalPath = to.fullPath
@@ -162,10 +213,10 @@ export default {
         this.isSearchedUser = false
         this.checkedUser = true
       }
-    }
+    },
   },
   mounted() {
-          this.checkedUser = false
+    this.checkedUser = false
 
     if (router.currentRoute.params.username) {
       store
@@ -179,6 +230,9 @@ export default {
     } else {
       this.isSearchedUser = false
       this.checkedUser = true
+    }
+    if (this.windowWidth < 420) {
+      this.bajar = true
     }
   }
 }
@@ -214,5 +268,8 @@ export default {
   justify-content: center;
   align-items: center;
   margin-top: 10px;
+}
+strong {
+  font-size: 1.2rem;
 }
 </style>

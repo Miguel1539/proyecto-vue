@@ -17,6 +17,11 @@ export default {
       path: '/profile-:username',
       name: 'profile-user',
       component: () => import('../modules/profile/views/ProfileView')
+    },
+    {
+      path: '/favorites',
+      name: 'favorites',
+      component: () => import('../modules/favorites/views/FavoritesView')
     }
   ]
 }
