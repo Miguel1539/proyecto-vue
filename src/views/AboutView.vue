@@ -1,5 +1,22 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
+  <div>
+    {{ aboutTitle }}
+  <input type="text" v-model="aboutTitle">
   </div>
 </template>
+
+<script>
+import { ref } from '@vue/composition-api'
+export default {
+  name: 'AboutView',
+  setup() {
+    const aboutTitle = ref('About')
+
+    return {
+      aboutTitle
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped></style>

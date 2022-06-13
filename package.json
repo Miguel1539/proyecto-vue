@@ -1,15 +1,21 @@
 {
-  "name": "proyecto-dev",
+  "name": "VirtualENV",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "start": "vue-cli-service serve"
   },
   "dependencies": {
+    "@vue/composition-api": "^1.6.0",
+    "axios": "^0.27.2",
     "core-js": "^3.8.3",
+    "npm-check-updates": "^12.5.11",
     "vue": "^2.6.14",
+    "vue-axios": "^3.4.1",
     "vue-router": "^3.5.1",
+    "vue-sweetalert2": "^5.0.2",
+    "vuetify": "^2.6.0",
     "vuex": "^3.6.2"
   },
   "devDependencies": {
@@ -19,6 +25,8 @@
     "@vue/cli-service": "~5.0.0",
     "sass": "^1.32.7",
     "sass-loader": "^12.0.0",
-    "vue-template-compiler": "^2.6.14"
+    "vue-cli-plugin-vuetify": "~2.4.8",
+    "vue-template-compiler": "^2.6.14",
+    "vuetify-loader": "^1.7.0"
   }
 }
