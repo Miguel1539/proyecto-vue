@@ -18,7 +18,7 @@
           <v-text-field
             v-model="searchTerm"
             append-icon="mdi-magnify"
-            label="Buscar suarios"
+            label="Buscar usuarios"
             single-line
           ></v-text-field>
           <!-- @keyup="searchUser" -->

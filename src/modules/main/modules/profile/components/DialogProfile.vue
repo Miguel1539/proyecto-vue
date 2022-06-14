@@ -63,7 +63,7 @@
           <v-col>
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title>Imagen par el avatar</v-list-item-title>
+                <v-list-item-title>Imagen para el avatar</v-list-item-title>
                 <v-file-input
                   v-model="selectedImgAvatar"
                   :rules="rules"
@@ -80,14 +80,14 @@
           <v-col>
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title>Imagen par el banner</v-list-item-title>
+                <v-list-item-title>Imagen para el banner</v-list-item-title>
                 <v-file-input
                   v-model="selectedImgBanner"
                   :rules="rules"
                   accept="image/png, image/jpeg"
                   placeholder="selecciona un avatar"
                   prepend-icon="mdi-camera"
-                  label="Avatar"
+                  label="Banner"
                 ></v-file-input>
               </v-list-item-content>
             </v-list-item>
@@ -97,7 +97,7 @@
           <v-col>
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title>Descipción</v-list-item-title>
+                <v-list-item-title>Descripción</v-list-item-title>
                 <v-textarea
                   filled
                   auto-grow
@@ -115,7 +115,7 @@
         </v-row>
       </v-list>
       <v-list three-line subheader v-else>
-        <v-subheader>informacion de la publicación</v-subheader>
+        <v-subheader>Información de la publicación</v-subheader>
         <v-row class="ancho-campos">
           <v-col>
             <v-list-item>
